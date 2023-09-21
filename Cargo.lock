@@ -135,6 +135,7 @@ name = "scalajs-wit-bindgen"
 version = "0.1.0"
 dependencies = [
  "convert_case",
+ "id-arena",
  "wit-parser",
 ]
 
