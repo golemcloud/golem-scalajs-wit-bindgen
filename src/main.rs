@@ -27,13 +27,13 @@ fn main() {
     unresolved_package
         .types
         .iter()
-        .filter(|(_, tpe)| match tpe.owner {
+        .filter(|(_, ty)| match ty.owner {
             TypeOwner::Interface(id) => id == interface_id,
             _ => false,
         })
-        .map(|(_, tpe)| match &tpe.kind {
+        .map(|(_, ty)| match &ty.kind {
             TypeDefKind::Record(record) => {
-                generate_scalajs_record(tpe.name.as_ref().unwrap(), record)
+                generate_scalajs_record(ty.name.as_ref().unwrap(), record)
             }
             _ => "".to_owned(),
         })
