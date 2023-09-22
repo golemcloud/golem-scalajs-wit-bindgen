@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use scalajs_wit_bindgen::codegen::Interface;
+use cargo_scalajs_wit_bindgen::codegen::Interface;
 use wit_parser::SourceMap;
 
 fn main() {
