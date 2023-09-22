@@ -18,7 +18,7 @@ impl From<&UnresolvedPackage> for TypeMap {
         let hash_map1 = unresolved_package
             .types
             .iter()
-            .filter_map(|(id, ty)| ty.name.clone().map(|name| (id, TypeName::from(name))))
+            .filter_map(|(id, ty)| ty.name.clone().map(|name| (id, TypeName::concrete(&name))))
             .collect::<HashMap<_, _>>();
 
         let hash_map2 = unresolved_package
@@ -29,10 +29,7 @@ impl From<&UnresolvedPackage> for TypeMap {
                     match ty.kind {
                         TypeDefKind::List(ty) => Some((
                             id,
-                            TypeName::from(format!(
-                                "List[{}]",
-                                Type::from_wit(ty, &Self(hash_map1.clone()))
-                            )), // TODO fix case
+                            TypeName::constructor("List", vec![ty], &TypeMap(hash_map1.clone())),
                         )),
                         _ => todo!("Support other kinds of types"),
                     }

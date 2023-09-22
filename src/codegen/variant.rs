@@ -42,7 +42,7 @@ pub struct Variant {
 impl Variant {
     pub fn from_wit(name: &str, variant: &WitVariant, type_map: &TypeMap) -> Self {
         Self {
-            name: TypeName::from(name.to_owned()),
+            name: TypeName::concrete(name),
             cases: variant
                 .cases
                 .iter()

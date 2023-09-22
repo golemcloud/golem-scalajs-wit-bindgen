@@ -42,7 +42,7 @@ pub struct Record {
 impl Record {
     pub fn from_wit(name: &str, record: &WitRecord, type_map: &TypeMap) -> Self {
         Self {
-            name: TypeName::from(name.to_owned()),
+            name: TypeName::concrete(name),
             fields: record
                 .clone()
                 .fields
