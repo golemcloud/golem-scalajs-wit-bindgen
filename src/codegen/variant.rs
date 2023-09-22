@@ -66,7 +66,7 @@ impl Variant {
                         (
                             "def",
                             format!("(value: {ty})"),
-                            "override val `val`: UndefOr[js.Object] = js.Object(value)",
+                            "override val `val`: js.UndefOr[js.Object] = js.Object(value)",
                         )
                     } else {
                         ("val", String::new(), "")
@@ -89,7 +89,7 @@ impl Variant {
             "
                 sealed trait {name} extends js.Object {{ self =>
                     val tag: String
-                    val `val`: UndefOr[js.Object] = js.undefined
+                    val `val`: js.UndefOr[js.Object] = js.undefined
                 }}
 
                 object {name} {{
