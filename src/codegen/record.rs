@@ -6,7 +6,7 @@ use wit_parser::{Field as WitField, Record as WitRecord};
 
 use crate::types::{Type, TypeMap, TypeName};
 
-pub struct FieldName(String);
+struct FieldName(String);
 
 impl Display for FieldName {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -20,7 +20,7 @@ impl From<String> for FieldName {
     }
 }
 
-pub struct Field {
+struct Field {
     name: FieldName,
     ty: Type,
 }
@@ -48,7 +48,7 @@ impl Record {
                 .fields
                 .into_iter()
                 .map(|field| Field::from_wit(field, type_map))
-                .collect::<Vec<_>>(),
+                .collect(),
         }
     }
 

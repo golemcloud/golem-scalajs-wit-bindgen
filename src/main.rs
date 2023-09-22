@@ -1,7 +1,10 @@
 use std::path::Path;
 
 use id_arena::Id;
-use scalajs_wit_bindgen::{codegen::Record, types::TypeMap};
+use scalajs_wit_bindgen::{
+    codegen::{Record, Variant},
+    types::TypeMap,
+};
 use wit_parser::{Interface, SourceMap, TypeDefKind, TypeOwner, UnresolvedPackage};
 
 fn main() {
@@ -42,6 +45,9 @@ fn render(interface_id: Id<Interface>, type_map: TypeMap, unresolved_package: Un
         .map(|(_, ty)| match &ty.kind {
             TypeDefKind::Record(record) => {
                 Record::from_wit(ty.name.as_ref().unwrap().as_str(), record, &type_map).render()
+            }
+            TypeDefKind::Variant(variant) => {
+                Variant::from_wit(ty.name.as_ref().unwrap().as_str(), variant, &type_map).render()
             }
             _ => String::new(),
         })
