@@ -4,7 +4,7 @@ use convert_case::{Case, Casing};
 
 use wit_parser::{Field as WitField, Record as WitRecord};
 
-use crate::types::{Type, TypeMap, TypeName};
+use crate::types::{ConcreteName, Type, TypeMap, TypeName};
 
 struct FieldName(String);
 
@@ -42,7 +42,7 @@ pub struct Record {
 impl Record {
     pub fn from_wit(name: &str, record: &WitRecord, type_map: &TypeMap) -> Self {
         Self {
-            name: TypeName::concrete(name),
+            name: TypeName::Concrete(ConcreteName::from(name.to_owned())),
             fields: record
                 .clone()
                 .fields

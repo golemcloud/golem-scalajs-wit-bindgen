@@ -4,7 +4,7 @@ use convert_case::{Case, Casing};
 
 use wit_parser::{Case as WitCase, Variant as WitVariant};
 
-use crate::types::{Type, TypeMap, TypeName};
+use crate::types::{ConcreteName, Type, TypeMap, TypeName};
 
 struct CaseName(String);
 
@@ -42,7 +42,7 @@ pub struct Variant {
 impl Variant {
     pub fn from_wit(name: &str, variant: &WitVariant, type_map: &TypeMap) -> Self {
         Self {
-            name: TypeName::concrete(name),
+            name: TypeName::Concrete(ConcreteName::from(name.to_owned())),
             cases: variant
                 .cases
                 .iter()

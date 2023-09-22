@@ -2,8 +2,8 @@ use std::fmt::Display;
 
 use convert_case::{Case, Casing};
 
-use id_arena::{Arena, Id};
-use wit_parser::{Interface as WitInterface, TypeDef, TypeDefKind, TypeOwner};
+use id_arena::Id;
+use wit_parser::{Interface as WitInterface, TypeDefKind, TypeOwner, UnresolvedPackage};
 
 use crate::types::TypeMap;
 
@@ -32,12 +32,11 @@ pub struct Interface {
 }
 
 impl Interface {
-    pub fn from_wit(
-        interface_id: Id<WitInterface>,
-        interface: &WitInterface,
-        types: &Arena<TypeDef>,
-        type_map: TypeMap,
-    ) -> Self {
+    pub fn from_wit(unresolved_package: &UnresolvedPackage) -> Self {
+        let (interface_id, interface) = Interface::get_interface("api", unresolved_package);
+        let type_map = TypeMap::from(unresolved_package);
+        let types = &unresolved_package.types;
+
         let records = types
             .iter()
             .filter(|(_, ty)| match ty.owner {
@@ -84,25 +83,36 @@ impl Interface {
         }
     }
 
+    fn get_interface<'a>(
+        name: &'static str,
+        unresolved_package: &'a UnresolvedPackage,
+    ) -> (Id<WitInterface>, &'a WitInterface) {
+        unresolved_package
+            .interfaces
+            .iter()
+            .find(|(_, interface)| interface.name.clone().unwrap_or_default() == name)
+            .unwrap()
+    }
+
     pub fn render(self, package: &str) -> String {
         let records = self
             .records
             .into_iter()
-            .map(|record| record.render())
+            .map(Record::render)
             .collect::<Vec<_>>()
             .join("\n");
 
         let variants = self
             .variants
             .into_iter()
-            .map(|variant| variant.render())
+            .map(Variant::render)
             .collect::<Vec<_>>()
             .join("\n");
 
         let functions = self
             .functions
             .into_iter()
-            .map(|function| function.render())
+            .map(Function::render)
             .collect::<Vec<_>>()
             .join("\n");
 

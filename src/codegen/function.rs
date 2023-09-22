@@ -83,11 +83,7 @@ impl Function {
             .join(", ");
 
         let out = {
-            let outs = self
-                .outs
-                .iter()
-                .map(|ty| ty.to_string())
-                .collect::<Vec<_>>();
+            let outs = self.outs.iter().map(Type::to_string).collect::<Vec<_>>();
 
             if outs.is_empty() {
                 "Unit".to_owned()

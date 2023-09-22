@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use id_arena::Id;
 use wit_parser::{TypeDef, TypeDefKind, UnresolvedPackage};
 
-use super::{Type, TypeName};
+use super::{ConcreteName, Constructor, TypeName};
 
 pub struct TypeMap(HashMap<Id<TypeDef>, TypeName>);
 
@@ -18,7 +18,11 @@ impl From<&UnresolvedPackage> for TypeMap {
         let hash_map1 = unresolved_package
             .types
             .iter()
-            .filter_map(|(id, ty)| ty.name.clone().map(|name| (id, TypeName::concrete(&name))))
+            .filter_map(|(id, ty)| {
+                ty.name
+                    .clone()
+                    .map(|name| (id, TypeName::Concrete(ConcreteName::from(name))))
+            })
             .collect::<HashMap<_, _>>();
 
         let hash_map2 = unresolved_package
@@ -29,7 +33,11 @@ impl From<&UnresolvedPackage> for TypeMap {
                     match ty.kind {
                         TypeDefKind::List(ty) => Some((
                             id,
-                            TypeName::constructor("List", vec![ty], &TypeMap(hash_map1.clone())),
+                            TypeName::Constructor(Constructor::new(
+                                "List",
+                                vec![ty],
+                                &TypeMap(hash_map1.clone()),
+                            )),
                         )),
                         _ => todo!("Support other kinds of types"),
                     }
@@ -39,6 +47,6 @@ impl From<&UnresolvedPackage> for TypeMap {
             })
             .collect::<HashMap<_, _>>();
 
-        Self(hash_map1.into_iter().chain(hash_map2.into_iter()).collect())
+        Self(hash_map1.into_iter().chain(hash_map2).collect())
     }
 }
