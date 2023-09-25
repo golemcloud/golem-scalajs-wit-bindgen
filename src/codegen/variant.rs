@@ -6,6 +6,9 @@ use wit_parser::{Case as WitCase, Variant as WitVariant};
 
 use crate::types::{ConcreteName, Type, TypeMap, TypeName};
 
+use super::Render;
+
+/// Represents the name of a variant case in Scala
 struct CaseName(String);
 
 impl Display for CaseName {
@@ -20,12 +23,17 @@ impl From<String> for CaseName {
     }
 }
 
+/// Represents a variant case in Scala
 struct VariantCase {
+    /// The case name
     name: CaseName,
+
+    /// The internal case type
     ty: Option<Type>,
 }
 
 impl VariantCase {
+    /// Constructs a VariantCase from WIT
     pub fn from_wit(case: WitCase, type_map: &TypeMap) -> Self {
         Self {
             name: CaseName::from(case.name),
@@ -34,12 +42,17 @@ impl VariantCase {
     }
 }
 
+/// Represents a Variant in Scala
 pub struct Variant {
+    /// The variant name
     name: TypeName,
+
+    /// The variant cases
     cases: Vec<VariantCase>,
 }
 
 impl Variant {
+    /// Constructs a Variant from WIT
     pub fn from_wit(name: &str, variant: &WitVariant, type_map: &TypeMap) -> Self {
         Self {
             name: TypeName::Concrete(ConcreteName::from(name.to_owned())),
@@ -50,8 +63,10 @@ impl Variant {
                 .collect(),
         }
     }
+}
 
-    pub fn render(self) -> String {
+impl Render for Variant {
+    fn render(self) -> String {
         let name = self.name;
 
         let constructors = self

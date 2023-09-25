@@ -5,6 +5,7 @@ use wit_parser::Type as WitType;
 
 use super::{Type, TypeMap};
 
+/// Represents the name of a Scala type
 #[derive(Clone)]
 pub enum TypeName {
     Concrete(ConcreteName),
@@ -20,6 +21,7 @@ impl Display for TypeName {
     }
 }
 
+/// Represents the name of a concrete Scala type
 #[derive(Clone)]
 pub struct ConcreteName(String);
 
@@ -35,13 +37,18 @@ impl Display for ConcreteName {
     }
 }
 
+/// Represents the name of a Scala type-constructor
 #[derive(Clone)]
 pub struct Constructor {
+    /// The name of the type-constructor
     name: String,
+
+    /// The params of the type-constructor
     params: Vec<String>,
 }
 
 impl Constructor {
+    /// Creates a new instance of Constructor
     pub fn new(name: &str, params: Vec<WitType>, type_map: &TypeMap) -> Self {
         Self {
             name: name.to_owned(),

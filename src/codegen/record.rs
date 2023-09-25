@@ -6,6 +6,9 @@ use wit_parser::{Field as WitField, Record as WitRecord};
 
 use crate::types::{ConcreteName, Type, TypeMap, TypeName};
 
+use super::Render;
+
+/// Represents the name of a record field in Scala
 struct FieldName(String);
 
 impl Display for FieldName {
@@ -20,12 +23,17 @@ impl From<String> for FieldName {
     }
 }
 
+/// Represents a record field in Scala
 struct Field {
+    /// The field name
     name: FieldName,
+
+    /// The Scala type associated to the field
     ty: Type,
 }
 
 impl Field {
+    // Constructs a Field from WIT
     pub fn from_wit(field: WitField, type_map: &TypeMap) -> Self {
         Self {
             name: FieldName::from(field.name),
@@ -34,12 +42,17 @@ impl Field {
     }
 }
 
+/// Represents a record in Scala
 pub struct Record {
+    /// The record name
     name: TypeName,
+
+    /// The record fields
     fields: Vec<Field>,
 }
 
 impl Record {
+    // Constructs a Record from WIT
     pub fn from_wit(name: &str, record: &WitRecord, type_map: &TypeMap) -> Self {
         Self {
             name: TypeName::Concrete(ConcreteName::from(name.to_owned())),
@@ -51,8 +64,10 @@ impl Record {
                 .collect(),
         }
     }
+}
 
-    pub fn render(self) -> String {
+impl Render for Record {
+    fn render(self) -> String {
         let fields = self
             .fields
             .iter()

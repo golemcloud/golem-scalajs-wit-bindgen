@@ -5,6 +5,7 @@ use wit_parser::{Result_, TypeDef, TypeDefKind, UnresolvedPackage};
 
 use super::{ConcreteName, Constructor, TypeName};
 
+/// Contains mappings from type IDs to type names
 pub struct TypeMap(HashMap<Id<TypeDef>, TypeName>);
 
 impl TypeMap {

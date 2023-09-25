@@ -7,8 +7,9 @@ use wit_parser::{Interface as WitInterface, TypeDefKind, TypeOwner, UnresolvedPa
 
 use crate::types::TypeMap;
 
-use super::{Function, Record, Variant};
+use super::{Function, Record, Render, Variant};
 
+/// Represents the name of an interface (trait) in Scala
 #[derive(Clone)]
 struct InterfaceName(String);
 
@@ -24,16 +25,25 @@ impl From<String> for InterfaceName {
     }
 }
 
+/// Represents an interface (trait) in Scala
 pub struct Interface {
+    /// The name of the interface
     name: InterfaceName,
+
+    /// The records associated to the interface
     records: Vec<Record>,
+
+    /// The variants associated to the interface
     variants: Vec<Variant>,
+
+    /// The functions associated to the interface
     functions: Vec<Function>,
 }
 
 impl Interface {
+    /// Constructs an Interface from WIT
     pub fn from_wit(unresolved_package: &UnresolvedPackage) -> Self {
-        let (interface_id, interface) = Interface::get_interface("api", unresolved_package);
+        let (interface_id, interface) = Self::get_interface("api", unresolved_package);
         let type_map = TypeMap::from(unresolved_package);
         let types = &unresolved_package.types;
 
@@ -94,28 +104,11 @@ impl Interface {
             .unwrap()
     }
 
+    /// Renders this to a String
     pub fn render(self, package: &str) -> String {
-        let records = self
-            .records
-            .into_iter()
-            .map(Record::render)
-            .collect::<Vec<_>>()
-            .join("\n");
-
-        let variants = self
-            .variants
-            .into_iter()
-            .map(Variant::render)
-            .collect::<Vec<_>>()
-            .join("\n");
-
-        let functions = self
-            .functions
-            .into_iter()
-            .map(Function::render)
-            .collect::<Vec<_>>()
-            .join("\n");
-
+        let records = Self::render_elements(self.records);
+        let variants = Self::render_elements(self.variants);
+        let functions = Self::render_elements(self.functions);
         let name = self.name;
 
         format!(
@@ -165,5 +158,13 @@ impl Interface {
                 }}
             "
         )
+    }
+
+    fn render_elements(elements: Vec<impl Render>) -> String {
+        elements
+            .into_iter()
+            .map(Render::render)
+            .collect::<Vec<_>>()
+            .join("\n")
     }
 }

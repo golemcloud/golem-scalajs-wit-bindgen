@@ -6,6 +6,9 @@ use wit_parser::{Function as WitFunction, Results as WitResults, Type as WitType
 
 use crate::types::{Type, TypeMap};
 
+use super::Render;
+
+/// Represents the name of a function param in Scala
 struct ParamName(String);
 
 impl Display for ParamName {
@@ -20,12 +23,17 @@ impl From<String> for ParamName {
     }
 }
 
+/// Represents a function param in Scala
 struct Param {
+    /// The param name
     name: ParamName,
+
+    /// The Scala type associated to the param
     ty: Type,
 }
 
 impl Param {
+    // Constructs a Param from WIT
     pub fn from_wit(name: String, ty: WitType, type_map: &TypeMap) -> Self {
         Self {
             name: ParamName::from(name),
@@ -34,6 +42,7 @@ impl Param {
     }
 }
 
+/// Represents a function name in Scala
 #[derive(Clone)]
 struct FunctionName(String);
 
@@ -49,13 +58,20 @@ impl From<String> for FunctionName {
     }
 }
 
+/// Represents a function in Scala
 pub struct Function {
+    /// The function name
     name: FunctionName,
+
+    /// The params of the function
     params: Vec<Param>,
+
+    /// The outputs of the function
     outs: Vec<Type>,
 }
 
 impl Function {
+    /// Constructs a Function from WIT
     pub fn from_wit(function: WitFunction, type_map: &TypeMap) -> Self {
         Self {
             name: FunctionName::from(function.name),
@@ -73,8 +89,10 @@ impl Function {
             },
         }
     }
+}
 
-    pub fn render(self) -> String {
+impl Render for Function {
+    fn render(self) -> String {
         let params = self
             .params
             .iter()

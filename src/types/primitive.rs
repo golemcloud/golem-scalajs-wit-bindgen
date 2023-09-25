@@ -1,5 +1,6 @@
 use std::fmt::Display;
 
+/// Represents a Scala primitive type
 pub enum Primitive {
     Boolean,
     Byte,
