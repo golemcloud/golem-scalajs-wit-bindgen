@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use id_arena::Id;
-use wit_parser::{TypeDef, TypeDefKind, UnresolvedPackage};
+use wit_parser::{Result_, TypeDef, TypeDefKind, UnresolvedPackage};
 
 use super::{ConcreteName, Constructor, TypeName};
 
@@ -34,12 +34,31 @@ impl From<&UnresolvedPackage> for TypeMap {
                         TypeDefKind::List(ty) => Some((
                             id,
                             TypeName::Constructor(Constructor::new(
-                                "List",
+                                "js.Array",
                                 vec![ty],
                                 &TypeMap(hash_map1.clone()),
                             )),
                         )),
-                        _ => todo!("Support other kinds of types"),
+                        TypeDefKind::Option(ty) => Some((
+                            id,
+                            TypeName::Constructor(Constructor::new(
+                                "Optional",
+                                vec![ty],
+                                &TypeMap(hash_map1.clone()),
+                            )),
+                        )),
+                        TypeDefKind::Result(Result_ {
+                            ok: Some(ok),
+                            err: Some(err),
+                        }) => Some((
+                            id,
+                            TypeName::Constructor(Constructor::new(
+                                "Result",
+                                vec![ok, err],
+                                &TypeMap(hash_map1.clone()),
+                            )),
+                        )),
+                        _ => todo!("Support other kinds of constructors"),
                     }
                 } else {
                     None

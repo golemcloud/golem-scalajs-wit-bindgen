@@ -44,7 +44,7 @@ pub struct Constructor {
 impl Constructor {
     pub fn new(name: &str, params: Vec<WitType>, type_map: &TypeMap) -> Self {
         Self {
-            name: name.to_case(Case::UpperCamel),
+            name: name.to_owned(),
             params: params
                 .into_iter()
                 .map(|param| Type::from_wit(param, type_map).to_string())
