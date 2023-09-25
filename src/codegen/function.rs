@@ -33,7 +33,7 @@ struct Param {
 }
 
 impl Param {
-    // Constructs a Param from WIT
+    // Constructs a `Param` from WIT
     pub fn from_wit(name: String, ty: WitType, type_map: &TypeMap) -> Self {
         Self {
             name: ParamName::from(name),
@@ -71,7 +71,7 @@ pub struct Function {
 }
 
 impl Function {
-    /// Constructs a Function from WIT
+    /// Constructs a `Function` from WIT
     pub fn from_wit(function: WitFunction, type_map: &TypeMap) -> Self {
         Self {
             name: FunctionName::from(function.name),

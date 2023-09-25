@@ -40,8 +40,18 @@ pub struct Interface {
     functions: Vec<Function>,
 }
 
+macro_rules! render {
+    ($elements:expr) => {
+        $elements
+            .into_iter()
+            .map(Render::render)
+            .collect::<Vec<_>>()
+            .join("\n")
+    };
+}
+
 impl Interface {
-    /// Constructs an Interface from WIT
+    /// Constructs an `Interface` from WIT
     pub fn from_wit(unresolved_package: &UnresolvedPackage) -> Self {
         let (interface_id, interface) = Self::get_interface("api", unresolved_package);
         let type_map = TypeMap::from(unresolved_package);
@@ -106,9 +116,9 @@ impl Interface {
 
     /// Renders this to a String
     pub fn render(self, package: &str) -> String {
-        let records = Self::render_elements(self.records);
-        let variants = Self::render_elements(self.variants);
-        let functions = Self::render_elements(self.functions);
+        let records = render!(self.records);
+        let variants = render!(self.variants);
+        let functions = render!(self.functions);
         let name = self.name;
 
         format!(
@@ -158,13 +168,5 @@ impl Interface {
                 }}
             "
         )
-    }
-
-    fn render_elements(elements: Vec<impl Render>) -> String {
-        elements
-            .into_iter()
-            .map(Render::render)
-            .collect::<Vec<_>>()
-            .join("\n")
     }
 }

@@ -33,7 +33,7 @@ struct VariantCase {
 }
 
 impl VariantCase {
-    /// Constructs a VariantCase from WIT
+    /// Constructs a `VariantCase` from WIT
     pub fn from_wit(case: WitCase, type_map: &TypeMap) -> Self {
         Self {
             name: CaseName::from(case.name),
@@ -42,7 +42,7 @@ impl VariantCase {
     }
 }
 
-/// Represents a Variant in Scala
+/// Represents a variant in Scala
 pub struct Variant {
     /// The variant name
     name: TypeName,
@@ -52,7 +52,7 @@ pub struct Variant {
 }
 
 impl Variant {
-    /// Constructs a Variant from WIT
+    /// Constructs a `Variant` from WIT
     pub fn from_wit(name: &str, variant: &WitVariant, type_map: &TypeMap) -> Self {
         Self {
             name: TypeName::Concrete(ConcreteName::from(name.to_owned())),

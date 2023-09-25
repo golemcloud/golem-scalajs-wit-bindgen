@@ -17,7 +17,7 @@ pub enum Type {
 }
 
 impl Type {
-    /// Generates a Scala type from a WIT type
+    /// Generates a `Type` from WIT
     pub fn from_wit(ty: WitType, type_map: &TypeMap) -> Self {
         match ty {
             WitType::Bool => Type::Primitive(Primitive::Boolean),

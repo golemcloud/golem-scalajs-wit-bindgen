@@ -33,7 +33,7 @@ struct Field {
 }
 
 impl Field {
-    // Constructs a Field from WIT
+    // Constructs a `Field` from WIT
     pub fn from_wit(field: WitField, type_map: &TypeMap) -> Self {
         Self {
             name: FieldName::from(field.name),
@@ -52,7 +52,7 @@ pub struct Record {
 }
 
 impl Record {
-    // Constructs a Record from WIT
+    // Constructs a `Record` from WIT
     pub fn from_wit(name: &str, record: &WitRecord, type_map: &TypeMap) -> Self {
         Self {
             name: TypeName::Concrete(ConcreteName::from(name.to_owned())),
@@ -66,35 +66,33 @@ impl Record {
     }
 }
 
+macro_rules! render {
+    ($fields: expr, $sep:literal, $formatter:expr) => {
+        $fields
+            .iter()
+            .map($formatter)
+            .collect::<Vec<_>>()
+            .join($sep)
+    };
+}
+
 impl Render for Record {
     fn render(self) -> String {
-        let fields = self
-            .fields
-            .iter()
-            .map(|Field { name, ty }| format!("val {name}: {ty}"))
-            .collect::<Vec<_>>()
-            .join("\n");
+        let fields = render!(self.fields, "\n", |Field { name, ty }| format!(
+            "val {name}: {ty}"
+        ));
 
-        let apply_params = self
-            .fields
-            .iter()
-            .map(|Field { name, ty }| format!("{name}: {ty}"))
-            .collect::<Vec<_>>()
-            .join(", ");
+        let apply_params = render!(self.fields, ", ", |Field { name, ty }| format!(
+            "{name}: {ty}"
+        ));
 
-        let apply_temp_vars = self
-            .fields
-            .iter()
-            .map(|Field { name, ty }| format!("val {name}0: {ty} = {name}"))
-            .collect::<Vec<_>>()
-            .join("\n");
+        let apply_temp_vars = render!(self.fields, "\n", |Field { name, ty }| format!(
+            "val {name}0: {ty} = {name}"
+        ));
 
-        let new_vars = self
-            .fields
-            .iter()
-            .map(|Field { name, ty }| format!("val {name}: {ty} = {name}0"))
-            .collect::<Vec<_>>()
-            .join("\n");
+        let new_vars = render!(self.fields, "\n", |Field { name, ty }| format!(
+            "val {name}: {ty} = {name}0"
+        ));
 
         let name = self.name;
 
