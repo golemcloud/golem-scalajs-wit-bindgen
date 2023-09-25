@@ -17,7 +17,9 @@ struct CliArgs {
 }
 
 fn main() {
-    let cli_args = CliArgs::parse();
+    let cli_args = CliArgs::parse_from(
+        std::env::args().filter(|t| *t != env!("CARGO_PKG_NAME").trim_start_matches("cargo-")),
+    );
 
     let mut source = SourceMap::new();
     source.push_file(Path::new(&cli_args.wit)).unwrap();
