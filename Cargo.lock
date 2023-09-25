@@ -63,16 +63,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bef38d45163c2f1dde094a7dfd33ccf595c92905c8f8f4fdc18d06fb1037718a"
 
 [[package]]
-name = "cargo-scalajs-wit-bindgen"
-version = "0.1.0"
-dependencies = [
- "clap",
- "convert_case",
- "id-arena",
- "wit-parser",
-]
-
-[[package]]
 name = "clap"
 version = "4.4.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -140,6 +130,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a62bc1cf6f830c2ec14a513a9fb124d0a213a629668a4186f329db21fe045652"
 dependencies = [
  "percent-encoding",
+]
+
+[[package]]
+name = "golem-scalajs-wit-bindgen"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "convert_case",
+ "id-arena",
+ "wit-parser",
 ]
 
 [[package]]

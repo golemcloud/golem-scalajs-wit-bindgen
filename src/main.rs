@@ -1,7 +1,7 @@
 use std::{fs, path::Path};
 
-use cargo_scalajs_wit_bindgen::codegen::Interface;
 use clap::Parser;
+use golem_scalajs_wit_bindgen::codegen::Interface;
 use wit_parser::SourceMap;
 
 #[derive(Parser)]
@@ -17,15 +17,13 @@ struct CliArgs {
 }
 
 fn main() {
-    let cli_args = CliArgs::parse_from(
-        std::env::args().filter(|t| *t != env!("CARGO_PKG_NAME").trim_start_matches("cargo-")),
-    );
+    let cli_args = CliArgs::parse();
 
     let mut source = SourceMap::new();
     source.push_file(Path::new(&cli_args.wit)).unwrap();
     let unresolved_package = source.parse().unwrap();
 
-    let dest_dir = format!("src/main/scala/{}", cli_args.package.replace(".", "/"));
+    let dest_dir = format!("src/main/scala/{}", cli_args.package.replace('.', "/"));
 
     fs::create_dir_all(&dest_dir).unwrap();
 
@@ -33,5 +31,5 @@ fn main() {
         format!("{dest_dir}/Api.scala"),
         Interface::from_wit(&unresolved_package).render(&cli_args.package),
     )
-    .unwrap()
+    .unwrap();
 }

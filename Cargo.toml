@@ -1,5 +1,5 @@
 [package]
-name = "cargo-scalajs-wit-bindgen"
+name = "golem-scalajs-wit-bindgen"
 description = "CLI tool for generating Scala.js bindings from a WIT file"
 version = "0.1.0"
 edition = "2021"
