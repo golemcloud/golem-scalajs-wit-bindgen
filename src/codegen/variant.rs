@@ -1,12 +1,11 @@
 use std::fmt::Display;
 
+use color_eyre::Result;
 use convert_case::{Case, Casing};
-
 use wit_parser::{Case as WitCase, Variant as WitVariant};
 
-use crate::types::{ConcreteName, Type, TypeMap, TypeName};
-
 use super::Render;
+use crate::types::{ConcreteName, Type, TypeMap, TypeName};
 
 /// Represents the name of a variant case in Scala
 struct CaseName(String);
@@ -34,11 +33,14 @@ struct VariantCase {
 
 impl VariantCase {
     /// Constructs a `VariantCase` from WIT
-    pub fn from_wit(case: WitCase, type_map: &TypeMap) -> Self {
-        Self {
+    pub fn from_wit(case: WitCase, type_map: &TypeMap) -> Result<Self> {
+        Ok(Self {
             name: CaseName::from(case.name),
-            ty: case.ty.map(|ty| Type::from_wit(ty, type_map)),
-        }
+            ty: match case.ty {
+                Some(ty) => Some(Type::from_wit(ty, type_map)?),
+                None => None,
+            },
+        })
     }
 }
 
@@ -53,20 +55,22 @@ pub struct Variant {
 
 impl Variant {
     /// Constructs a `Variant` from WIT
-    pub fn from_wit(name: &str, variant: &WitVariant, type_map: &TypeMap) -> Self {
-        Self {
+    pub fn from_wit(name: &str, variant: &WitVariant, type_map: &TypeMap) -> Result<Self> {
+        let cases: Result<Vec<VariantCase>> = variant
+            .cases
+            .iter()
+            .map(|case| VariantCase::from_wit(case.clone(), type_map))
+            .collect();
+
+        Ok(Self {
             name: TypeName::Concrete(ConcreteName::from(name.to_owned())),
-            cases: variant
-                .cases
-                .iter()
-                .map(|case| VariantCase::from_wit(case.clone(), type_map))
-                .collect(),
-        }
+            cases: cases?,
+        })
     }
 }
 
 impl Render for Variant {
-    fn render(self) -> String {
+    fn render(self) -> Result<String> {
         let name = self.name;
 
         let constructors = self
@@ -100,7 +104,7 @@ impl Render for Variant {
             .collect::<Vec<_>>()
             .join("\n");
 
-        format!(
+        Ok(format!(
             "
                 sealed trait {name} extends js.Object {{ self =>
                     val tag: String
@@ -111,6 +115,6 @@ impl Render for Variant {
                     {constructors}
                 }}
             "
-        )
+        ))
     }
 }

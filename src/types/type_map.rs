@@ -34,30 +34,31 @@ impl From<&UnresolvedPackage> for TypeMap {
                     match ty.kind {
                         TypeDefKind::List(ty) => Some((
                             id,
-                            TypeName::Constructor(Constructor::new(
-                                "js.Array",
-                                vec![ty],
-                                &TypeMap(hash_map1.clone()),
-                            )),
+                            TypeName::Constructor(
+                                Constructor::new("js.Array", vec![ty], &TypeMap(hash_map1.clone()))
+                                    .ok()?,
+                            ),
                         )),
                         TypeDefKind::Option(ty) => Some((
                             id,
-                            TypeName::Constructor(Constructor::new(
-                                "Optional",
-                                vec![ty],
-                                &TypeMap(hash_map1.clone()),
-                            )),
+                            TypeName::Constructor(
+                                Constructor::new("Optional", vec![ty], &TypeMap(hash_map1.clone()))
+                                    .ok()?,
+                            ),
                         )),
                         TypeDefKind::Result(Result_ {
                             ok: Some(ok),
                             err: Some(err),
                         }) => Some((
                             id,
-                            TypeName::Constructor(Constructor::new(
-                                "Result",
-                                vec![ok, err],
-                                &TypeMap(hash_map1.clone()),
-                            )),
+                            TypeName::Constructor(
+                                Constructor::new(
+                                    "Result",
+                                    vec![ok, err],
+                                    &TypeMap(hash_map1.clone()),
+                                )
+                                .ok()?,
+                            ),
                         )),
                         _ => todo!("Support other kinds of constructors"),
                     }

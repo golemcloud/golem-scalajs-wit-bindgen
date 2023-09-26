@@ -1,12 +1,11 @@
 use std::fmt::Display;
 
+use color_eyre::Result;
 use convert_case::{Case, Casing};
-
 use wit_parser::{Function as WitFunction, Results as WitResults, Type as WitType};
 
-use crate::types::{Type, TypeMap};
-
 use super::Render;
+use crate::types::{Type, TypeMap};
 
 /// Represents the name of a function param in Scala
 struct ParamName(String);
@@ -34,11 +33,11 @@ struct Param {
 
 impl Param {
     // Constructs a `Param` from WIT
-    pub fn from_wit(name: String, ty: WitType, type_map: &TypeMap) -> Self {
-        Self {
+    pub fn from_wit(name: String, ty: WitType, type_map: &TypeMap) -> Result<Self> {
+        Ok(Self {
             name: ParamName::from(name),
-            ty: Type::from_wit(ty, type_map),
-        }
+            ty: Type::from_wit(ty, type_map)?,
+        })
     }
 }
 
@@ -72,27 +71,31 @@ pub struct Function {
 
 impl Function {
     /// Constructs a `Function` from WIT
-    pub fn from_wit(function: WitFunction, type_map: &TypeMap) -> Self {
-        Self {
-            name: FunctionName::from(function.name),
-            params: function
-                .params
-                .into_iter()
-                .map(|(name, ty)| Param::from_wit(name, ty, type_map))
+    pub fn from_wit(function: WitFunction, type_map: &TypeMap) -> Result<Self> {
+        let params: Result<Vec<Param>> = function
+            .params
+            .into_iter()
+            .map(|(name, ty)| Param::from_wit(name, ty, type_map))
+            .collect();
+
+        let outs: Result<Vec<Type>> = match function.results {
+            WitResults::Named(params) => params
+                .iter()
+                .map(|(_, ty)| Type::from_wit(*ty, type_map))
                 .collect(),
-            outs: match function.results {
-                WitResults::Named(params) => params
-                    .iter()
-                    .map(|(_, ty)| Type::from_wit(*ty, type_map))
-                    .collect(),
-                WitResults::Anon(ty) => vec![Type::from_wit(ty, type_map)],
-            },
-        }
+            WitResults::Anon(ty) => Type::from_wit(ty, type_map).map(|ty| vec![ty]),
+        };
+
+        Ok(Self {
+            name: FunctionName::from(function.name),
+            params: params?,
+            outs: outs?,
+        })
     }
 }
 
 impl Render for Function {
-    fn render(self) -> String {
+    fn render(self) -> Result<String> {
         let params = self
             .params
             .iter()
@@ -114,6 +117,6 @@ impl Render for Function {
 
         let name = self.name;
 
-        format!("def {name}({params}): {out}")
+        Ok(format!("def {name}({params}): {out}"))
     }
 }

@@ -1,12 +1,11 @@
 use std::fmt::Display;
 
+use color_eyre::Result;
 use convert_case::{Case, Casing};
-
 use wit_parser::{Field as WitField, Record as WitRecord};
 
-use crate::types::{ConcreteName, Type, TypeMap, TypeName};
-
 use super::Render;
+use crate::types::{ConcreteName, Type, TypeMap, TypeName};
 
 /// Represents the name of a record field in Scala
 struct FieldName(String);
@@ -34,11 +33,11 @@ struct Field {
 
 impl Field {
     // Constructs a `Field` from WIT
-    pub fn from_wit(field: WitField, type_map: &TypeMap) -> Self {
-        Self {
+    pub fn from_wit(field: WitField, type_map: &TypeMap) -> Result<Self> {
+        Ok(Self {
             name: FieldName::from(field.name),
-            ty: Type::from_wit(field.ty, type_map),
-        }
+            ty: Type::from_wit(field.ty, type_map)?,
+        })
     }
 }
 
@@ -53,21 +52,23 @@ pub struct Record {
 
 impl Record {
     // Constructs a `Record` from WIT
-    pub fn from_wit(name: &str, record: &WitRecord, type_map: &TypeMap) -> Self {
-        Self {
+    pub fn from_wit(name: &str, record: &WitRecord, type_map: &TypeMap) -> Result<Self> {
+        let fields: Result<Vec<Field>> = record
+            .clone()
+            .fields
+            .into_iter()
+            .map(|field| Field::from_wit(field, type_map))
+            .collect();
+
+        Ok(Self {
             name: TypeName::Concrete(ConcreteName::from(name.to_owned())),
-            fields: record
-                .clone()
-                .fields
-                .into_iter()
-                .map(|field| Field::from_wit(field, type_map))
-                .collect(),
-        }
+            fields: fields?,
+        })
     }
 }
 
 impl Render for Record {
-    fn render(self) -> String {
+    fn render(self) -> Result<String> {
         fn render<F>(fields: &[Field], sep: &str, formatter: F) -> String
         where
             F: FnMut(&Field) -> String,
@@ -93,7 +94,7 @@ impl Render for Record {
 
         let name = self.name;
 
-        format!(
+        Ok(format!(
             "
                 sealed trait {name} extends js.Object {{
                     {fields}
@@ -108,6 +109,6 @@ impl Render for Record {
                     }}
                 }}
             "
-        )
+        ))
     }
 }

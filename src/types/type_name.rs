@@ -1,5 +1,6 @@
 use std::fmt::Display;
 
+use color_eyre::Result;
 use convert_case::{Case, Casing};
 use wit_parser::Type as WitType;
 
@@ -49,14 +50,16 @@ pub struct Constructor {
 
 impl Constructor {
     /// Creates a new instance of Constructor
-    pub fn new(name: &str, params: Vec<WitType>, type_map: &TypeMap) -> Self {
-        Self {
+    pub fn new(name: &str, params: Vec<WitType>, type_map: &TypeMap) -> Result<Self> {
+        let params: Result<Vec<Type>> = params
+            .into_iter()
+            .map(|param| Type::from_wit(param, type_map))
+            .collect();
+
+        Ok(Self {
             name: name.to_owned(),
-            params: params
-                .into_iter()
-                .map(|param| Type::from_wit(param, type_map).to_string())
-                .collect(),
-        }
+            params: params?.iter().map(Type::to_string).collect(),
+        })
     }
 }
 

@@ -1,6 +1,7 @@
 use std::{fs, path::Path};
 
 use clap::Parser;
+use color_eyre::{eyre::eyre, Result, Section};
 use golem_scalajs_wit_bindgen::codegen::Interface;
 use wit_parser::SourceMap;
 
@@ -16,20 +17,25 @@ struct CliArgs {
     package: String,
 }
 
-fn main() {
+fn main() -> Result<()> {
+    color_eyre::install()?;
+
     let cli_args = CliArgs::parse();
 
     let mut source = SourceMap::new();
-    source.push_file(Path::new(&cli_args.wit)).unwrap();
-    let unresolved_package = source.parse().unwrap();
+    source
+        .push_file(Path::new(&cli_args.wit))
+        .map_err(|e| eyre!("{e:?}"))
+        .with_suggestion(|| "Provide a WIT file that actually exists")?;
+
+    let unresolved_package = source.parse().map_err(|e| eyre!("{e:?}"))?;
 
     let dest_dir = format!("src/main/scala/{}", cli_args.package.replace('.', "/"));
 
-    fs::create_dir_all(&dest_dir).unwrap();
+    fs::create_dir_all(&dest_dir)?;
 
-    fs::write(
+    Ok(fs::write(
         format!("{dest_dir}/Api.scala"),
-        Interface::from_wit(&unresolved_package).render(&cli_args.package),
-    )
-    .unwrap();
+        Interface::from_wit(&unresolved_package)?.render(&cli_args.package)?,
+    )?)
 }

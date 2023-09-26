@@ -8,6 +8,7 @@ pub use type_name::*;
 
 use std::fmt::Display;
 
+use color_eyre::{eyre::eyre, Result};
 use wit_parser::Type as WitType;
 
 /// Represents a Scala type
@@ -18,18 +19,21 @@ pub enum Type {
 
 impl Type {
     /// Generates a `Type` from WIT
-    pub fn from_wit(ty: WitType, type_map: &TypeMap) -> Self {
+    pub fn from_wit(ty: WitType, type_map: &TypeMap) -> Result<Self> {
         match ty {
-            WitType::Bool => Type::Primitive(Primitive::Boolean),
-            WitType::U8 | WitType::S8 => Type::Primitive(Primitive::Byte),
-            WitType::U16 | WitType::S16 => Type::Primitive(Primitive::Short),
-            WitType::U32 | WitType::S32 => Type::Primitive(Primitive::Integer),
-            WitType::U64 | WitType::S64 => Type::Primitive(Primitive::Long),
-            WitType::Float32 => Type::Primitive(Primitive::Float),
-            WitType::Float64 => Type::Primitive(Primitive::Double),
-            WitType::Char => Type::Primitive(Primitive::Char),
-            WitType::String => Type::Primitive(Primitive::String),
-            WitType::Id(id) => Type::Custom(type_map.get(&id).unwrap().clone()),
+            WitType::Bool => Ok(Type::Primitive(Primitive::Boolean)),
+            WitType::U8 | WitType::S8 => Ok(Type::Primitive(Primitive::Byte)),
+            WitType::U16 | WitType::S16 => Ok(Type::Primitive(Primitive::Short)),
+            WitType::U32 | WitType::S32 => Ok(Type::Primitive(Primitive::Integer)),
+            WitType::U64 | WitType::S64 => Ok(Type::Primitive(Primitive::Long)),
+            WitType::Float32 => Ok(Type::Primitive(Primitive::Float)),
+            WitType::Float64 => Ok(Type::Primitive(Primitive::Double)),
+            WitType::Char => Ok(Type::Primitive(Primitive::Char)),
+            WitType::String => Ok(Type::Primitive(Primitive::String)),
+            WitType::Id(id) => type_map
+                .get(&id)
+                .map(|ty| Type::Custom(ty.clone()))
+                .ok_or(eyre!("Could not find type ID {id:?} in type_map")),
         }
     }
 }
