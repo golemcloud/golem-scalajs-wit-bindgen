@@ -40,16 +40,6 @@ pub struct Interface {
     functions: Vec<Function>,
 }
 
-macro_rules! render {
-    ($elements:expr) => {
-        $elements
-            .into_iter()
-            .map(Render::render)
-            .collect::<Vec<_>>()
-            .join("\n")
-    };
-}
-
 impl Interface {
     /// Constructs an `Interface` from WIT
     pub fn from_wit(unresolved_package: &UnresolvedPackage) -> Self {
@@ -116,9 +106,17 @@ impl Interface {
 
     /// Renders this to a String
     pub fn render(self, package: &str) -> String {
-        let records = render!(self.records);
-        let variants = render!(self.variants);
-        let functions = render!(self.functions);
+        fn render(elements: Vec<impl Render>) -> String {
+            elements
+                .into_iter()
+                .map(Render::render)
+                .collect::<Vec<_>>()
+                .join("\n")
+        }
+
+        let records = render(self.records);
+        let variants = render(self.variants);
+        let functions = render(self.functions);
         let name = self.name;
 
         format!(

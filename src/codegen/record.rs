@@ -66,33 +66,30 @@ impl Record {
     }
 }
 
-macro_rules! render {
-    ($fields: expr, $sep:literal, $formatter:expr) => {
-        $fields
-            .iter()
-            .map($formatter)
-            .collect::<Vec<_>>()
-            .join($sep)
-    };
-}
-
 impl Render for Record {
     fn render(self) -> String {
-        let fields = render!(self.fields, "\n", |Field { name, ty }| format!(
-            "val {name}: {ty}"
-        ));
+        fn render<F>(fields: &[Field], sep: &str, formatter: F) -> String
+        where
+            F: FnMut(&Field) -> String,
+        {
+            fields.iter().map(formatter).collect::<Vec<_>>().join(sep)
+        }
 
-        let apply_params = render!(self.fields, ", ", |Field { name, ty }| format!(
-            "{name}: {ty}"
-        ));
+        let fields = render(&self.fields, "\n", |Field { name, ty }| {
+            format!("val {name}: {ty}")
+        });
 
-        let apply_temp_vars = render!(self.fields, "\n", |Field { name, ty }| format!(
-            "val {name}0: {ty} = {name}"
-        ));
+        let apply_params = render(&self.fields, ", ", |Field { name, ty }| {
+            format!("{name}: {ty}")
+        });
 
-        let new_vars = render!(self.fields, "\n", |Field { name, ty }| format!(
-            "val {name}: {ty} = {name}0"
-        ));
+        let apply_temp_vars = render(&self.fields, "\n", |Field { name, ty }| {
+            format!("val {name}0: {ty} = {name}")
+        });
+
+        let new_vars = render(&self.fields, "\n", |Field { name, ty }| {
+            format!("val {name}: {ty} = {name}0")
+        });
 
         let name = self.name;
 
