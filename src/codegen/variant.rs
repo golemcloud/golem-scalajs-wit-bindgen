@@ -81,19 +81,22 @@ impl Render for Variant {
                      name: case_name,
                      ty,
                  }| {
-                    let (def_or_val, param_list, val) = if let Some(ty) = ty {
+                    let (def_or_val, param_list, val, type_tag) = if let Some(ty) = ty {
                         (
                             "def",
                             format!("(value: {ty})"),
-                            "override val `val`: js.UndefOr[js.Object] = js.Object(value)",
+                            "override val `val`: js.UndefOr[Type] = value",
+                            format!("type Type = {ty}"),
                         )
                     } else {
-                        ("val", String::new(), "")
+                        ("val", String::new(), "", "type Type = Nothing".to_owned())
                     };
 
                     format!(
                         "
-                            {def_or_val} {case_name}{param_list}: {name} = new {name} {{
+                            {def_or_val} {case_name}{param_list} = new {name} {{
+                                {type_tag}
+                                
                                 val tag: String = \"{case_name}\"
                                 {val}
                             }}
@@ -107,8 +110,10 @@ impl Render for Variant {
         Ok(format!(
             "
                 sealed trait {name} extends js.Object {{ self =>
+                    type Type
+
                     val tag: String
-                    val `val`: js.UndefOr[js.Object] = js.undefined
+                    val `val`: js.UndefOr[Type]
                 }}
 
                 object {name} {{

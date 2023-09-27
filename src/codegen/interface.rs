@@ -122,37 +122,6 @@ impl Interface {
 
                 import scala.scalajs.js
 
-                sealed trait Optional[+A] extends js.Object {{
-                    val tag: String
-                    val `val`: js.UndefOr[js.Object] = js.undefined
-                }}
-                object Optional {{
-                    def some[A](value: A): Optional[A] = new Optional[A] {{
-                        val tag: String                           = \"some\"
-                        override val `val`: js.UndefOr[js.Object] = js.Object(value)
-                    }}
-
-                    def none: Optional[Nothing] = new Optional[Nothing] {{
-                        val tag: String = \"none\"
-                    }}
-                }}
-
-                sealed trait Result[+Ok, +Err] extends js.Object {{
-                    val tag: String
-                    val `val`: js.UndefOr[js.Object] = js.undefined
-                }}
-                object Result {{
-                    def ok[Ok](value: Ok): Result[Ok, Nothing] = new Result[Ok, Nothing] {{
-                        val tag: String                           = \"ok\"
-                        override val `val`: js.UndefOr[js.Object] = js.Object(value)
-                    }}
-
-                    def err[Err](value: Err): Result[Nothing, Err] = new Result[Nothing, Err] {{
-                        val tag: String                           = \"err\"
-                        override val `val`: js.UndefOr[js.Object] = js.Object(value)
-                    }}
-                }}
-
                 {records}
 
                 {variants}
