@@ -29,7 +29,10 @@ fn main() -> Result<()> {
         .map_err(|e| eyre!("{e:?}"))
         .with_suggestion(|| "Provide a WIT file that actually exists")?;
 
-    let unresolved_package = source.parse().map_err(|e| eyre!("{e:?}"))?;
+    let unresolved_package = source
+        .parse()
+        .map_err(|e| eyre!("{e:?}"))
+        .with_suggestion(|| "Make sure the provided WIT file is valid")?;
 
     let dest_dir = format!("src/main/scala/{}", cli_args.package.replace('.', "/"));
 
