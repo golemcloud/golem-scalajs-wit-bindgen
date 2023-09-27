@@ -42,8 +42,12 @@ impl From<&UnresolvedPackage> for TypeMap {
                         TypeDefKind::Option(ty) => Some((
                             id,
                             TypeName::Constructor(
-                                Constructor::new("Optional", vec![ty], &TypeMap(hash_map1.clone()))
-                                    .ok()?,
+                                Constructor::new(
+                                    "js.UndefOr",
+                                    vec![ty],
+                                    &TypeMap(hash_map1.clone()),
+                                )
+                                .ok()?,
                             ),
                         )),
                         TypeDefKind::Result(Result_ {

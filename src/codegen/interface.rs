@@ -127,6 +127,8 @@ impl Interface {
                 {variants}
 
                 trait {name} {{
+                    type Result[+Ok, +Err] = Ok
+                    
                     {functions}
                 }}
             "
