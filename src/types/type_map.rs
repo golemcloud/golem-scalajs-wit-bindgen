@@ -35,8 +35,12 @@ impl From<&UnresolvedPackage> for TypeMap {
                         TypeDefKind::List(ty) => Some((
                             id,
                             TypeName::Constructor(
-                                Constructor::new("WitList", vec![ty], &TypeMap(hash_map1.clone()))
-                                    .ok()?,
+                                Constructor::new(
+                                    "WitList",
+                                    vec![Some(ty)],
+                                    &TypeMap(hash_map1.clone()),
+                                )
+                                .ok()?,
                             ),
                         )),
                         TypeDefKind::Option(ty) => Some((
@@ -44,16 +48,13 @@ impl From<&UnresolvedPackage> for TypeMap {
                             TypeName::Constructor(
                                 Constructor::new(
                                     "WitOption",
-                                    vec![ty],
+                                    vec![Some(ty)],
                                     &TypeMap(hash_map1.clone()),
                                 )
                                 .ok()?,
                             ),
                         )),
-                        TypeDefKind::Result(Result_ {
-                            ok: Some(ok),
-                            err: Some(err),
-                        }) => Some((
+                        TypeDefKind::Result(Result_ { ok, err }) => Some((
                             id,
                             TypeName::Constructor(
                                 Constructor::new(

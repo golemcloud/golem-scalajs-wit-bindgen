@@ -50,15 +50,31 @@ pub struct Constructor {
 
 impl Constructor {
     /// Creates a new instance of Constructor
-    pub fn new(name: &str, params: Vec<WitType>, type_map: &TypeMap) -> Result<Self> {
-        let params: Result<Vec<Type>> = params
+    pub fn new(name: &str, params: Vec<Option<WitType>>, type_map: &TypeMap) -> Result<Self> {
+        fn process_param(param: Option<WitType>, type_map: &TypeMap) -> Result<Option<Type>> {
+            match param.map(|param| Type::from_wit(param, type_map)) {
+                Some(Ok(ty)) => Ok(Some(ty)),
+                Some(Err(err)) => Err(err),
+                None => Ok(None),
+            }
+        }
+
+        let params: Result<Vec<Option<Type>>> = params
             .into_iter()
-            .map(|param| Type::from_wit(param, type_map))
+            .map(|param| process_param(param, type_map))
             .collect();
 
         Ok(Self {
             name: name.to_owned(),
-            params: params?.iter().map(Type::to_string).collect(),
+            params: params?
+                .iter()
+                .map(|param| {
+                    param
+                        .as_ref()
+                        .map(|ty| ty.to_string())
+                        .unwrap_or_else(|| "Unit".to_owned())
+                })
+                .collect(),
         })
     }
 }
