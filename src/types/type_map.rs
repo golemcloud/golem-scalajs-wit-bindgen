@@ -35,7 +35,7 @@ impl From<&UnresolvedPackage> for TypeMap {
                         TypeDefKind::List(ty) => Some((
                             id,
                             TypeName::Constructor(
-                                Constructor::new("js.Array", vec![ty], &TypeMap(hash_map1.clone()))
+                                Constructor::new("WitList", vec![ty], &TypeMap(hash_map1.clone()))
                                     .ok()?,
                             ),
                         )),
@@ -43,7 +43,7 @@ impl From<&UnresolvedPackage> for TypeMap {
                             id,
                             TypeName::Constructor(
                                 Constructor::new(
-                                    "js.UndefOr",
+                                    "WitOption",
                                     vec![ty],
                                     &TypeMap(hash_map1.clone()),
                                 )
@@ -57,7 +57,7 @@ impl From<&UnresolvedPackage> for TypeMap {
                             id,
                             TypeName::Constructor(
                                 Constructor::new(
-                                    "Result",
+                                    "WitResult",
                                     vec![ok, err],
                                     &TypeMap(hash_map1.clone()),
                                 )
