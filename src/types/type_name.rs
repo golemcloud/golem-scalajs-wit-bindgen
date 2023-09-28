@@ -71,8 +71,7 @@ impl Constructor {
                 .map(|param| {
                     param
                         .as_ref()
-                        .map(|ty| ty.to_string())
-                        .unwrap_or_else(|| "Unit".to_owned())
+                        .map_or_else(|| "Unit".to_owned(), Type::to_string)
                 })
                 .collect(),
         })

@@ -21,6 +21,12 @@ Then you can install `golem-scalajs-wit-bindgen` with the following command:
 cargo install golem-scalajs-wit-bindgen
 ```
 
+Or, you can clone this repository and install with the following command:
+
+```shell
+cargo install --path .
+```
+
 ## Running
 
 To run `golem-scalajs-wit-bindgen` and get more help, you can execute the following command:
