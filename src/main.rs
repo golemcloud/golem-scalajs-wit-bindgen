@@ -1,8 +1,7 @@
-use std::{fs, path::Path};
+use std::path::Path;
 
 use clap::Parser;
 use color_eyre::{eyre::eyre, Result, Section};
-use color_print::cprintln;
 use golem_scalajs_wit_bindgen::codegen::Interface;
 use wit_parser::SourceMap;
 
@@ -34,14 +33,8 @@ fn main() -> Result<()> {
         .map_err(|e| eyre!("{e:?}"))
         .with_suggestion(|| "Make sure the provided WIT file is valid")?;
 
-    let dest_dir = format!("src/main/scala/{}", cli_args.package.replace('.', "/"));
-
-    fs::create_dir_all(&dest_dir)?;
-
-    fs::write(
-        format!("{dest_dir}/Api.scala"),
-        Interface::from_wit(&unresolved_package)?.render(&cli_args.package)?,
-    )?;
-
-    Ok(cprintln!("<green>WIT file generated successfully</green>"))
+    Ok(println!(
+        "{}",
+        Interface::from_wit(&unresolved_package)?.render(&cli_args.package)?
+    ))
 }
