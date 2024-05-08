@@ -123,7 +123,7 @@ impl Render for Function {
             if outs.is_empty() {
                 "Unit".to_owned()
             } else if outs.len() == 1 {
-                outs.get(0).unwrap().clone()
+                outs.first().unwrap().clone()
             } else {
                 format!("({})", outs.join(", "))
             }
