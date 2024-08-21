@@ -13,5 +13,28 @@
 // limitations under the License.
 
 /// Module containing all the logic for Scala.js code generation
-pub mod codegen;
+mod codegen;
 mod types;
+
+pub mod generator {
+    use crate::codegen::Interface;
+    use color_eyre::{eyre::eyre, Section};
+    use std::path::Path;
+    use wit_parser::SourceMap;
+
+    pub fn generate(wit: &Path, package: &str) -> color_eyre::Result<String> {
+        let mut source = SourceMap::new();
+        source
+            .push_file(wit)
+            .map_err(|e| eyre!("{e:?}"))
+            .with_suggestion(|| "Provide a WIT file that actually exists")?;
+
+        let unresolved_package = source
+            .parse()
+            .map(|g| g.main)
+            .map_err(|e| eyre!("{e:?}"))
+            .with_suggestion(|| "Make sure the provided WIT file is valid")?;
+
+        Interface::from_wit(&unresolved_package, "api")?.render(package)
+    }
+}

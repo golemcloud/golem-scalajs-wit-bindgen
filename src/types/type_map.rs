@@ -79,7 +79,7 @@ impl From<&UnresolvedPackage> for TypeMap {
                                 .ok()?,
                             ),
                         )),
-                        _ => todo!("Support other kinds of constructors"),
+                        _ => todo!("Unsupported constructor for type '{}'", ty.kind.as_str()),
                     }
                 } else {
                     None

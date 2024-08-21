@@ -55,8 +55,11 @@ pub struct Interface {
 
 impl Interface {
     /// Constructs an `Interface` from WIT
-    pub fn from_wit(unresolved_package: &UnresolvedPackage) -> Result<Self> {
-        let (interface_id, interface) = Self::get_interface("api", unresolved_package)?;
+    pub fn from_wit(
+        unresolved_package: &UnresolvedPackage,
+        interface_name: &'static str,
+    ) -> Result<Self> {
+        let (interface_id, interface) = Self::get_interface(interface_name, unresolved_package)?;
         let type_map = TypeMap::from(unresolved_package);
         let types = &unresolved_package.types;
 
