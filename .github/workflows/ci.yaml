@@ -34,8 +34,35 @@ jobs:
       - name: Tests
         run: cargo test --all-features --test all
 
-  publish:
+  build-scala:
     needs: [ build ]
+    strategy:
+      matrix:
+        scala-version: [ 2.12.19, 2.13.14 ]
+        scalajs-version: [ 1.16.0 ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Scala
+        run: |
+          curl -O https://downloads.lightbend.com/scala/${{ matrix.scala-version }}/scala-${{ matrix.scala-version }}.deb
+          sudo dpkg -i scala-${{ matrix.scala-version }}.deb
+          rm scala-${{ matrix.scala-version }}.deb
+      - name: Setup Scalajs
+        run: |
+          cd tests/wit
+          SCALA_VERSION_SHORT="$(echo ${{ matrix.scala-version }} | cut -d. -f1,2)"
+          SCALAJS_LIBRARY="scalajs-library_${SCALA_VERSION_SHORT}-${{ matrix.scalajs-version }}.jar"
+          curl -O "https://repo1.maven.org/maven2/org/scala-js/scalajs-library_${SCALA_VERSION_SHORT}/${{ matrix.scalajs-version }}/${SCALAJS_LIBRARY}"
+      - name: Compile
+        run: |
+          cd tests/wit
+          SCALA_VERSION_SHORT="$(echo ${{ matrix.scala-version }} | cut -d. -f1,2)"
+          SCALAJS_LIBRARY="scalajs-library_${SCALA_VERSION_SHORT}-${{ matrix.scalajs-version }}.jar"
+          find . -name "*.scala" | grep -vFf <(grep -v '^#' scalac-excluded.txt) | xargs -I {} scalac -classpath "${SCALAJS_LIBRARY}" {}
+  
+  publish:
+    needs: [ build, build-scala ]
     if: "startsWith(github.ref, 'refs/tags/v')"
     runs-on: ubuntu-latest
     steps:
@@ -53,10 +80,9 @@ jobs:
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-is
       - name: Setup Rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
-          override: true
       - id: get_version
         uses: battila7/get-version-action@v2
       - name: Publish crate
