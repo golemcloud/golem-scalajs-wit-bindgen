@@ -1,0 +1,44 @@
+package pack: name;
+
+world messaging-service {
+  export api;
+}
+
+interface api {
+  send-message: func(user-id: u32, message: string, channel: message-channel) -> (res: message-result);
+  get-message-status: func(message-id: u32) -> (status: message-status);
+  list-user-messages: func(user-id: u32) -> (messages: list<message>);
+
+  record message {
+    message-id: u32,
+    user-id: u32,
+    content: string,
+    channel: message-channel,
+    status: message-status,
+    //sent-at: datetime,        // TODO: unsupported
+  }
+
+  variant message-result {
+    success(message),
+    failure(message-error),
+  }
+
+  enum message-status {     // TODO: unsupported
+    pending,
+    sent,
+    delivered,
+    failed,
+  }
+
+  enum message-channel {    // TODO: unsupported
+    email,
+    sms,
+    push-notification,
+  }
+
+  enum message-error {      // TODO: unsupported
+    invalid-channel,
+    user-not-found,
+    sending-failed,
+  }
+}

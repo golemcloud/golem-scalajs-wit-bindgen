@@ -8,11 +8,19 @@ homepage = "https://www.golem.cloud/"
 authors = ["Golem Cloud team"]
 readme = "README.md"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
-wit-parser = "0.11.1"
+wit-parser = "0.215.0"
 convert_case = "0.6.0"
 id-arena = "2.2.1"
-clap = { version = "4.4.4", features = ["derive"] }
+clap = { version = "4.5.16", features = ["derive"] }
 color-eyre = "0.6"
+
+[dev-dependencies]
+env_logger = "0.11"
+pretty_assertions = "1.4.0"
+libtest-mimic = "0.7.3"
+anyhow = "1.0.86"
+
+[[test]]
+name = "all"
+harness = false

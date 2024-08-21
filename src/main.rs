@@ -12,12 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::path::Path;
-
 use clap::Parser;
-use color_eyre::{eyre::eyre, Result, Section};
-use golem_scalajs_wit_bindgen::codegen::Interface;
-use wit_parser::SourceMap;
+use color_eyre::Result;
+use golem_scalajs_wit_bindgen::generator;
+use std::path::Path;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -36,19 +34,6 @@ fn main() -> Result<()> {
 
     let cli_args = CliArgs::parse();
 
-    let mut source = SourceMap::new();
-    source
-        .push_file(Path::new(&cli_args.wit))
-        .map_err(|e| eyre!("{e:?}"))
-        .with_suggestion(|| "Provide a WIT file that actually exists")?;
-
-    let unresolved_package = source
-        .parse()
-        .map_err(|e| eyre!("{e:?}"))
-        .with_suggestion(|| "Make sure the provided WIT file is valid")?;
-
-    Ok(println!(
-        "{}",
-        Interface::from_wit(&unresolved_package)?.render(&cli_args.package)?
-    ))
+    generator::generate(Path::new(&cli_args.wit), &cli_args.package)
+        .map(|code| println!("{}", code))
 }

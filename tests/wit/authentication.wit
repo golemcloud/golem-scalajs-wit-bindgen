@@ -1,0 +1,40 @@
+package pack: name;
+
+world authentication {
+  export api;
+}
+
+interface api {
+  register-user: func(username: string, password: string, email: string) -> (auth-outcome: auth-result);
+  login: func(username: string, password: string) -> (res: login-result);
+  validate-token: func(token: string) -> (status: auth-status);
+
+  record auth-result {
+    user-id: u32,
+    token: string,
+    //expiration: datetime,     // TODO: unsupported
+  }
+
+  record user-credentials {
+    username: string,
+    password-hash: string,
+    salt: string,
+  }
+
+  variant login-result {
+    success(auth-result),
+    failure(login-error),
+  }
+
+  enum login-error {        // TODO: unsupported
+    invalid-credentials,
+    user-not-found,
+    account-locked,
+  }
+
+  variant auth-status {
+    valid(u32), // user-id
+    expired,
+    invalid,
+  }
+}
