@@ -1,0 +1,18 @@
+package pack: name;
+
+world user-management {
+  export api;
+}
+
+interface api {
+  record user {
+    user-id: u32,
+    name: string,
+    email: string,
+    //created-at: datetime,     // TODO: unsupported
+  }
+
+  create-user: func(name: string, email: string) -> (user-id: u32);
+  get-user: func(user-id: u32) -> (name: string, email: string);
+  delete-user: func(user-id: u32) -> (res: bool);
+}

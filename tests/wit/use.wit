@@ -1,0 +1,23 @@
+package foo: foo;
+
+interface foo {
+  use bar.{the-type};   // TODO: unsupported (use)
+}
+
+interface bar {
+  type the-type = u32;  // TODO: unsupported (type)
+}
+
+interface api {
+  use foo.{the-type};
+  use bar.{the-type as test};
+  //use use-from-empty;
+}
+
+interface empty {
+}
+
+interface use-from-empty {
+  use empty.{};
+  use empty.{};
+}

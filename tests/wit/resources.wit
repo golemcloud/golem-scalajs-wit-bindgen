@@ -1,0 +1,12 @@
+package foo: resources;
+
+interface api {
+  //t1: func(a: borrow<r1>) -> ();  // TODO: unsupported (borrow)
+  //t2: func(a: own<r1>) -> ();
+  //t3: func(a: r1) -> ();
+
+  //resource r1 {   // TODO: unsupported (borrow)
+  //  f1: func();
+  //}
+}
+

@@ -1,0 +1,36 @@
+package pack: name;
+
+interface user-interface {
+  create-account: func(username: string, email: string) -> (res: account-result);
+  get-user-info: func(user-id: u32) -> (info: user-info);
+
+  record user-info {
+    user-id: u32,
+    username: string,
+    email: string,
+    //registered-at: datetime,      // TODO: unsupported
+  }
+
+  variant account-result {
+    success(user-info),
+    failure(account-error),
+  }
+
+  enum account-error {
+    username-taken,
+    invalid-email,
+  }
+}
+
+interface api {
+  //import user-interface;      // TODO: unsupported
+  //import wasi: io/types;
+  //import logger: func(message: string);
+  //import notification-service: interface {
+  //   send-notification: func(user-id: u32, message: string);
+  //}
+}
+
+world app-command {
+  export api;
+}
