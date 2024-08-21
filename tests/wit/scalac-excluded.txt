@@ -1,0 +1,4 @@
+# Those files are excluded because of compilation failures in Scala
+authentication.scala
+messaging-service.scala
+types.scala
