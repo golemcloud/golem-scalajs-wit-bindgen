@@ -40,8 +40,8 @@ impl Type {
             WitType::U16 | WitType::S16 => Ok(Type::Primitive(Primitive::Short)),
             WitType::U32 | WitType::S32 => Ok(Type::Primitive(Primitive::Integer)),
             WitType::U64 | WitType::S64 => Ok(Type::Primitive(Primitive::Long)),
-            WitType::Float32 => Ok(Type::Primitive(Primitive::Float)),
-            WitType::Float64 => Ok(Type::Primitive(Primitive::Double)),
+            WitType::F32 => Ok(Type::Primitive(Primitive::Float)),
+            WitType::F64 => Ok(Type::Primitive(Primitive::Double)),
             WitType::Char => Ok(Type::Primitive(Primitive::Char)),
             WitType::String => Ok(Type::Primitive(Primitive::String)),
             WitType::Id(id) => type_map
