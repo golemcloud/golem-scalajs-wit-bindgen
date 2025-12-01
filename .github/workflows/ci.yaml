@@ -13,7 +13,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/cache@v4
         with:
           path: |
@@ -42,7 +42,7 @@ jobs:
         scalajs-version: [ 1.16.0 ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Setup Scala
         run: |
           curl -O https://downloads.lightbend.com/scala/${{ matrix.scala-version }}/scala-${{ matrix.scala-version }}.deb
@@ -67,7 +67,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: true
       - uses: actions/cache@v4
